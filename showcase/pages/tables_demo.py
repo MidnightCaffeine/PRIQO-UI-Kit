@@ -55,6 +55,7 @@ def build(theme: Theme, page: ft.Page) -> ft.Control:
             {"icon": ft.Icons.EDIT_OUTLINED, "tooltip": "Edit", "on_click": lambda r: None},
             {"icon": ft.Icons.DELETE_OUTLINE, "tooltip": "Delete", "on_click": lambda r: None, "danger": True},
         ],
+        page=page,
     )
 
     bulk_bar = BulkActionBar(

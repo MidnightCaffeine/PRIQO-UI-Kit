@@ -34,12 +34,21 @@ from prisqo_ui.components.core.variants import (
 )
 
 
-def _content_row(theme: Theme, text: Optional[str], icon: Optional[str], color: str, loading: bool, icon_size: int, spacing: int) -> ft.Control:
+def _content_row(theme: Theme, text: Optional[str], icon: Optional[str], color: str, loading: bool, icon_size: int, spacing: int, font_size: Optional[int] = None) -> ft.Control:
+    # `theme.typography.button()` is a fixed 14px style; at "sm"/compact
+    # size that font size barely fits the tighter box, so use the size
+    # spec's own `font_size` (13px for "sm") when one is given, instead of
+    # always rendering compact buttons with the "md" text size.
+    style = theme.typography.button(color)
+    if font_size is not None:
+        style = ft.TextStyle(
+            size=font_size, weight=style.weight, color=style.color, font_family=style.font_family,
+        )
     if loading:
         return ft.Row(
             controls=[
                 ft.ProgressRing(width=16, height=16, stroke_width=2, color=color),
-                ft.Text(text or "Loading...", style=theme.typography.button(color)),
+                ft.Text(text or "Loading...", style=style, no_wrap=True),
             ],
             spacing=spacing,
             alignment=ft.MainAxisAlignment.CENTER,
@@ -48,7 +57,7 @@ def _content_row(theme: Theme, text: Optional[str], icon: Optional[str], color: 
     row_children = []
     if icon:
         row_children.append(ft.Icon(icon, size=icon_size, color=color))
-    row_children.append(ft.Text(text, style=theme.typography.button(color)))
+    row_children.append(ft.Text(text, style=style, no_wrap=True))
     return ft.Row(controls=row_children, spacing=spacing, alignment=ft.MainAxisAlignment.CENTER, tight=True)
 
 
@@ -81,11 +90,18 @@ def Button(
     spec = resolve_size(theme, size)
     is_disabled = disabled or loading
     h = height or spec.height
-    padding = ft.Padding.symmetric(horizontal=spec.padding_h, vertical=spec.padding_v)
+    # Horizontal padding only: the surrounding `LiquidPressable` box has a
+    # fixed `height` and already centers its content (`alignment=(0, 0)`).
+    # Stacking vertical padding on top of a fixed height was squeezing the
+    # available space below the text's actual line-height at small sizes
+    # (e.g. "sm"/compact: 32px height - 12px vertical padding = 20px, too
+    # tight for a 14px/bold label), and `clip_behavior=ANTI_ALIAS` on the
+    # box silently clipped the glyphs instead of overflowing visibly.
+    padding = ft.Padding.symmetric(horizontal=spec.padding_h, vertical=0)
 
     if ghost:
         fg = theme.text_muted if is_disabled else colors.text
-        content = _content_row(theme, text, icon, fg, loading, spec.icon_size, spec.padding_v // 2 or 6)
+        content = _content_row(theme, text, icon, fg, loading, spec.icon_size, spec.padding_v // 2 or 6, spec.font_size)
         return LiquidPressable(
             theme, content=content, bgcolor=ft.Colors.TRANSPARENT,
             hover_bgcolor=theme.surface_variant, on_click=None if is_disabled else on_click,
@@ -95,7 +111,7 @@ def Button(
 
     if outline:
         fg = theme.text_muted if is_disabled else colors.text
-        content = _content_row(theme, text, icon, fg, loading, spec.icon_size, spec.padding_v // 2 or 6)
+        content = _content_row(theme, text, icon, fg, loading, spec.icon_size, spec.padding_v // 2 or 6, spec.font_size)
         return LiquidPressable(
             theme, content=content, bgcolor=ft.Colors.TRANSPARENT,
             hover_bgcolor=colors.soft_bg, border=ft.Border.all(1, theme.border if is_disabled else colors.border),
@@ -105,7 +121,7 @@ def Button(
 
     # Solid/filled -- the default, like `.btn-{variant}` with no modifier.
     fg = theme.text_muted if is_disabled else colors.on_solid
-    content = _content_row(theme, text, icon, fg, loading, spec.icon_size, spec.padding_v // 2 or 6)
+    content = _content_row(theme, text, icon, fg, loading, spec.icon_size, spec.padding_v // 2 or 6, spec.font_size)
     return LiquidPressable(
         theme, content=content, bgcolor=colors.solid, hover_bgcolor=colors.solid_hover,
         on_click=None if is_disabled else on_click, disabled=is_disabled, width=width, height=h,

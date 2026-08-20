@@ -35,8 +35,13 @@ from prisqo_ui.components.core.variants import VariantName, resolve_variant
 # which mirrors Flutter's `AlertDialog(scrollable: true)` -- the dialog shrinks to
 # fit its content and, once content would exceed the screen, scrolls internally
 # without the dialog itself ever overflowing the viewport. Older Flet lacks this
-# param, so `_dialog_shell` falls back to a height-capped scrollable container
-# (the same technique this file's `AsyncFormDialog` already used).
+# param, so `_dialog_shell` falls back to a height-capped scrollable container.
+#
+# IMPORTANT: every dialog constructor in this file (`AppDialog`, `ConfirmDialog`,
+# `FormDialog`, `AsyncFormDialog`, `Swal`, ...) routes through this one function
+# with no per-dialog special-casing, so whichever branch is picked applies
+# identically to all of them -- `FormDialog` and `AsyncFormDialog` cannot drift
+# out of sync with each other as long as neither bypasses `_dialog_shell`.
 _ALERTDIALOG_SUPPORTS_SCROLLABLE = "scrollable" in inspect.signature(ft.AlertDialog.__init__).parameters
 
 _ICON_BY_VARIANT: dict = {

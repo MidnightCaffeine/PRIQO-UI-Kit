@@ -42,7 +42,7 @@ def build(theme: Theme, page: ft.Page) -> ft.Control:
         {"key": "stock", "label": "Stock", "numeric": True},
         {"key": "status", "label": "Status", "render": lambda r: InventoryStatus(theme, r["stock"])},
     ]
-    combined_table = AppDataTable(theme, columns, ITEMS, row_id_field="sku")
+    combined_table = AppDataTable(theme, columns, ITEMS, row_id_field="sku", page=page)
 
     module_cards = ft.Row(
         controls=[

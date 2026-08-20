@@ -82,7 +82,7 @@ def Snackbar(
             if on_action:
                 on_action(e)
 
-        actions = [ft.TextButton(text=action_label, on_click=_run_action, style=ft.ButtonStyle(color=color))]
+        actions = [ft.TextButton(content=ft.Text(action_label), on_click=_run_action, style=ft.ButtonStyle(color=color))]
 
     dismiss = notify(
         theme,

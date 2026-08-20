@@ -378,4 +378,3 @@ Every addition above follows the existing conventions: `theme: Theme` as
 the first argument, semantic tokens only (no raw hex), and the liquid
 button/interaction style already used throughout the rest of the kit.
 
-"# PRIQO-UI-Kit" 

@@ -304,6 +304,7 @@ def build_dashboard_content(theme, page: ft.Page) -> ft.Control:
         ],
         rows=rows,
         row_id_field="id",
+        page=page,
     )
 
     inventory_card = AppCard(

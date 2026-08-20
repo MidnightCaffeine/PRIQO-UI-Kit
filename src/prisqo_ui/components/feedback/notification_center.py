@@ -167,11 +167,26 @@ def notify(
             ft.Container(content=body, expand=True),
         ]
         if closable:
+            # `ft.IconButton` carries its own ~8px built-in hit-padding, so
+            # centering it against the message text (rather than the old
+            # `START` alignment, which pinned it to the top and made it
+            # look offset whenever the message was a single line) needs
+            # that padding zeroed out too, or the text still reads as
+            # sitting above/below the button instead of level with it.
             row_children.append(
-                ft.IconButton(icon=ft.Icons.CLOSE, icon_size=16, icon_color=theme.text_muted, on_click=_close, tooltip="Dismiss")
+                ft.IconButton(
+                    icon=ft.Icons.CLOSE,
+                    icon_size=16,
+                    icon_color=theme.text_muted,
+                    on_click=_close,
+                    tooltip="Dismiss",
+                    style=ft.ButtonStyle(padding=0),
+                    width=24,
+                    height=24,
+                )
             )
 
-        column_children = [ft.Row(controls=row_children, spacing=theme.spacing.SM, vertical_alignment=ft.CrossAxisAlignment.START)]
+        column_children = [ft.Row(controls=row_children, spacing=theme.spacing.SM, vertical_alignment=ft.CrossAxisAlignment.CENTER)]
         if actions:
             column_children.append(ft.Row(controls=list(actions), spacing=theme.spacing.SM, wrap=True, run_spacing=4))
 
