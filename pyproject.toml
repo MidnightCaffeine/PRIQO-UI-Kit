@@ -1,0 +1,15 @@
+[project]
+name = "prisqo-ui"
+version = "0.1.0"
+description = "Standalone, reusable Flet 0.85.3 UI component library for PRISQO ERP"
+requires-python = ">=3.11"
+dependencies = [
+    "flet==0.85.3",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
