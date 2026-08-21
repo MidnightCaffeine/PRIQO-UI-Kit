@@ -93,13 +93,25 @@ def NumberField(
     error: Optional[str] = None,
     width: Optional[float] = None,
     allow_decimal: bool = True,
+    hint: Optional[str] = None,
+    helper_text: Optional[str] = None,
     on_change: Optional[Callable] = None,
 ) -> ft.TextField:
+    """Numeric `ft.TextField`.
+
+    `hint`/`helper_text` mirror `AppTextField`'s own params exactly
+    (`hint` -> `hint_text`, `helper_text` -> `helper` styled via
+    `theme.typography.caption`) so numeric fields aren't a special case
+    within the same form.
+    """
     pattern = r"^\d*\.?\d*$" if allow_decimal else r"^\d*$"
     display_label = f"{label} *" if (label and required) else label
     return ft.TextField(
         label=display_label,
         value=value,
+        hint_text=hint,
+        helper=helper_text,
+        helper_style=theme.typography.caption(theme.text_muted),
         disabled=disabled,
         error=error,
         width=width,
